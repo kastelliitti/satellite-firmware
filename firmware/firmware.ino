@@ -9,6 +9,10 @@ void setup() {
 
 void loop() {
   float temperature = readTemperature();
-  sendData((String)temperature);
+  float pressure = readPressure();
+  float ldrVoltage = analogRead(LDR);
+  float ax, ay, az;
+  readAcceleration(ax, ay, az);
+  sendData((String)temperature + "," + (String)pressure + "," + (String)ldrVoltage + "," + (String)ax + "," + (String)ay + "," + (String)az);
   delay(500);
 }

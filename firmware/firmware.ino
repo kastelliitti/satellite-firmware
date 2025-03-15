@@ -5,6 +5,7 @@
 ADS1115 ADS(0x48);
 
 int MODE = 0;
+int INTERVAL = 200;
 
 void setup() {
   Serial.begin(115200);
@@ -64,7 +65,7 @@ void missionMode() {
     memcpy(&package[16 + (4 * i)], &acceleration[i], 4);
   }
   sendData(&package, 28);
-  delay(200);
+  delay(INTERVAL);
 }
 
 void postmissionMode() {
@@ -72,10 +73,17 @@ void postmissionMode() {
 }
 
 void onBinaryDataReceived(const uint8_t *data, uint16_t len){
-  int newMode = 0;
-  memcpy(&newMode, data, len);
-  Serial.println((String)newMode);
-  if (newMode >= 0 && newMode < 3) {
-    MODE = newMode;
+  if (len == 1) {
+    int newMode = 0;
+    memcpy(&newMode, data, len);
+    if (newMode >= 0 && newMode < 3) {
+      MODE = newMode;
+    }
+  } else if (len == 2) {
+    unsigned short int newInterval;
+    memcpy(&newInterval, data, len);
+    if (newInterval >= 50 && newInterval <= 10000) {
+      INTERVAL = newInterval;
+    }
   }
 }
